@@ -1,4 +1,5 @@
-import java.io.File
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import kotlin.coroutines.experimental.buildSequence
 
 /**
@@ -45,10 +46,7 @@ fun prga(s : Array<Int>) = buildSequence {
 }
 
 
-fun rc4(key : String, inputFileName : String, outputFileName: String) {
-    val reader = File(inputFileName).reader()
-    val writer = File(outputFileName).writer()
-
+fun rc4(key : String, reader : InputStreamReader, writer: OutputStreamWriter) {
     val sBlock = ksa(key)
     val prgaIterator = prga(sBlock).iterator()
 
@@ -60,9 +58,6 @@ fun rc4(key : String, inputFileName : String, outputFileName: String) {
 
         writer.write(c.xor(prgaIterator.next()))
     }
-
-    reader.close()
-    writer.close()
 }
 
 
