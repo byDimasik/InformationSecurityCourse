@@ -1,4 +1,7 @@
 import struct
+import numpy
+import matplotlib.pyplot as plt
+
 from os import stat
 from PIL import Image
 
@@ -150,3 +153,47 @@ class LSB:
             if file_size and len(data_bits) != 0:
                 data = self._compose(data_bits)
                 file_size -= output_file.write(data[:file_size])
+
+
+class LSBAnalyzer:
+    """
+    Statistical analysis of an image to detect LSB steganography
+    Split the image into blocks.
+    Compute the average value of the LSBs for each block.
+    The plot of the averages should be around 0.5 for zones that contain hidden encrypted messages (random data).
+    """
+    @staticmethod
+    def analyse(image_name):
+        block_size = 100  # Block size
+        img = Image.open(image_name)
+        (width, height) = img.size
+        image_data = img.convert("RGBA").getdata()
+
+        r_bits = []  # Red LSBs
+        g_bits = []  # Green LSBs
+        b_bits = []  # Blue LSBs
+        for h in range(height):
+            for w in range(width):
+                (r, g, b, a) = image_data.getpixel((w, h))
+                r_bits.append(r & 1)
+                g_bits.append(g & 1)
+                b_bits.append(b & 1)
+
+        # Average colours' LSB per each block
+        avg_r = []
+        avg_g = []
+        avg_b = []
+        for i in range(0, len(r_bits), block_size):
+            avg_r.append(numpy.mean(r_bits[i:i + block_size]))
+            avg_g.append(numpy.mean(g_bits[i:i + block_size]))
+            avg_b.append(numpy.mean(b_bits[i:i + block_size]))
+
+        number_of_blocks = len(avg_r)
+        blocks = [i for i in range(number_of_blocks)]
+        plt.axis([0, len(avg_r), 0, 1])
+        plt.ylabel('Average LSB per block')
+        plt.xlabel('Block number')
+
+        plt.plot(blocks, avg_b, 'bo')
+
+        plt.show()

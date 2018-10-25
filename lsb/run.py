@@ -16,3 +16,6 @@ if __name__ == "__main__":
         print('Differences:', result)
     else:
         print('No differences')
+
+    lsb.LSBAnalyzer.analyse(config.input_image_name)
+    lsb.LSBAnalyzer.analyse(config.output_image_name)
