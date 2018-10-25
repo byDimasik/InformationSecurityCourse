@@ -2,3 +2,4 @@
 *.iml
 out/
 __pycache__
+venv
